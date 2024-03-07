@@ -9,7 +9,7 @@ import java.util.HashMap;
  *
  * @author dhruv
  */
-public class RomanNumeral1 {
+public class RomanNumeral {
     private static Map<Character, Integer> map;
 
     static {
@@ -24,22 +24,66 @@ public class RomanNumeral1 {
     }
 
     public static void main(String[] args) {
-        RomanNumeral1 romanNumeral = new RomanNumeral1();
-        System.out.println("Conversion result: " + romanNumeral.romanToInt("XXIV"));
-    }
+        RomanNumeral romanNumeral = new RomanNumeral();
 
+        // Test cases
+        System.out.println("Conversion result: " + romanNumeral.romanToInt("XXIV")); // Valid
+        System.out.println("Conversion result: " + romanNumeral.romanToInt("XI")); // Valid
+        System.out.println("Conversion result: " + romanNumeral.romanToInt("IV")); // Valid
+        System.out.println("Conversion result: " + romanNumeral.romanToInt("XIV")); // Valid
+        System.out.println("Conversion result: " + romanNumeral.romanToInt("II")); // Valid
+        System.out.println("Conversion result: " + romanNumeral.romanToInt("I")); // Valid
+        System.out.println("Conversion result: " + romanNumeral.romanToInt("Z")); // Invalid
+        System.out.println("Conversion result: " + romanNumeral.romanToInt("XIZ")); // Invalid
+        System.out.println("Conversion result: " + romanNumeral.romanToInt("VV")); // Invalid
+        System.out.println("Conversion result: " + romanNumeral.romanToInt(null)); // Invalid
+    }
+    //Check if it is null
     public int romanToInt(String s) {
-        int convertedNumber = 0;
-        for (int i = 0; i < s.length(); i++) {
-            int currentNumber = map.get(s.charAt(i));
-            int next = i + 1 < s.length() ? map.get(s.charAt(i + 1)) : 0;
-            if (currentNumber >= next)
-                convertedNumber += currentNumber;
-            else
-                convertedNumber -= currentNumber;
+        if (s == null) {
+            System.out.println("Input is null. Please provide a valid Roman numeral.");
+            return 0; 
         }
+
+        int convertedNumber = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            char currentChar = s.charAt(i);
+
+            // Check if the letter is a valid Roman numeral character
+            if (!map.containsKey(currentChar)) {
+                System.out.println("Invalid Roman numeral character: " + currentChar);
+                return 0; 
+            }
+
+            int currentNumber = map.get(currentChar);
+            int next = i + 1 < s.length() ? map.get(s.charAt(i + 1)) : 0;
+
+            // Check for invalid subtractive notation
+            if (currentNumber < next) {
+                if (!isValidSubtractiveNotation(currentChar, s.charAt(i + 1))) {
+                    System.out.println("Invalid subtractive notation: " + currentChar + s.charAt(i + 1));
+                    return 0; 
+                }
+
+                convertedNumber += next - currentNumber;
+                i++; // Skip the next character since it's already considered
+            } else {
+                convertedNumber += currentNumber;
+            }
+        }
+
         return convertedNumber;
     }
+
+    // Check if the subtractive notation is valid
+    private boolean isValidSubtractiveNotation(char currentChar, char nextChar) {
+        return (currentChar == 'I' && (nextChar == 'V' || nextChar == 'X'))
+                || (currentChar == 'X' && (nextChar == 'L' || nextChar == 'C'))
+                || (currentChar == 'C' && (nextChar == 'D' || nextChar == 'M'));
+    }
+}
+
 
     
     
